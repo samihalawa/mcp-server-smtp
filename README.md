@@ -2,6 +2,10 @@
 
 A Model Context Protocol (MCP) server that provides email sending capabilities for Claude and other MCP-compatible AI assistants.
 
+<a href="https://glama.ai/mcp/servers/9u1qq6tli6">
+  <img width="380" height="200" src="https://glama.ai/mcp/servers/9u1qq6tli6/badge" alt="SMTP Server MCP server" />
+</a>
+
 ## Features
 
 - **Multiple SMTP Configurations**: Configure and manage multiple SMTP servers
@@ -227,4 +231,4 @@ Parameters: None
 
 ## License
 
-MIT 
+MIT
