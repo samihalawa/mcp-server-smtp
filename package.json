@@ -1,13 +1,21 @@
 {
-  "name": "smtp-mcp-server",
+  "name": "mcp-smtp-server",
   "version": "1.0.0",
   "description": "SMTP Email MCP Server with template management",
   "main": "build/index.js",
   "type": "module",
+  "bin": {
+    "mcp-smtp-server": "build/index.js",
+    "mcp-smtp-server-smithery": "scripts/start-smithery.js"
+  },
   "scripts": {
-    "build": "tsc",
+    "build": "tsc && chmod +x build/index.js",
     "start": "node build/index.js",
-    "watch": "tsc --watch"
+    "watch": "tsc --watch",
+    "prepare": "npm run build",
+    "dev": "npm run build && npm start",
+    "smithery:publish": "./scripts/publish-to-smithery.sh",
+    "smithery:api-publish": "node scripts/smithery-api-publish.js"
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.4.1",

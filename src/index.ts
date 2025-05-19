@@ -42,6 +42,7 @@ async function runServer() {
       {
         name: "smtp-email-server",
         version: "1.0.0",
+        description: "SMTP Email MCP Server with template management"
       },
       {
         capabilities: {
@@ -65,6 +66,24 @@ async function runServer() {
     await server.connect(transport);
 
     logToFile("SMTP MCP Server started successfully");
+    
+    // Keep the process alive when run directly
+    console.log("SMTP MCP Server running. Press Ctrl+C to exit.");
+    
+    // Handle stdin to keep the process running
+    process.stdin.resume();
+    
+    // Handle process termination
+    process.on('SIGINT', () => {
+      logToFile("Server shutting down due to SIGINT");
+      process.exit(0);
+    });
+    
+    process.on('SIGTERM', () => {
+      logToFile("Server shutting down due to SIGTERM");
+      process.exit(0);
+    });
+    
   } catch (error) {
     logToFile(`Server failed to start: ${error}`);
     process.exit(1);

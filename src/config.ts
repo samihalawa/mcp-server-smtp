@@ -55,28 +55,16 @@ export const LOG_FILE = path.join(CONFIG_DIR, 'email-logs.json');
 export const DEFAULT_SMTP_CONFIG: SmtpConfig = {
   smtpServers: [
     {
-      id: 'aws-ses',
-      name: 'AWS SES',
-      host: 'email-smtp.us-east-1.amazonaws.com', // Update this to your actual AWS SES region
+      id: 'example-smtp',
+      name: 'Example SMTP',
+      host: 'smtp.example.com',
       port: 587,
       secure: false,
       auth: {
-        user: 'AKIAXXXXXXXXXXX', // Replace with your AWS SES SMTP username (Access Key)
-        pass: 'XXXXXXXXXXXXXXXX' // Replace with your AWS SES SMTP password (Secret Key)
+        user: 'username',
+        pass: 'password'
       },
       isDefault: true
-    },
-    {
-      id: 'gmail',
-      name: 'Gmail SMTP',
-      host: 'smtp.gmail.com',
-      port: 587,
-      secure: false,
-      auth: {
-        user: 'eugproductions@gmail.com',
-        pass: 'rovt fswq crlv bhzk'
-      },
-      isDefault: false
     }
   ],
   rateLimit: {
@@ -94,41 +82,41 @@ export const DEFAULT_TEMPLATE: EmailTemplate = {
   isDefault: true
 };
 
-// IE Business School outreach template
-export const IE_TEMPLATE: EmailTemplate = {
-  id: 'ie-outreach',
-  name: 'IE Business School Outreach',
-  subject: 'Exclusive AI & Data Science Opportunity - IE Business School Students',
+// Example business template
+export const BUSINESS_TEMPLATE: EmailTemplate = {
+  id: 'business-outreach',
+  name: 'Business Outreach',
+  subject: 'Partnership Opportunity - {{company}}',
   body: `Dear {{name}},
 
-I hope this email finds you well. I'm reaching out to a select group of IE Business School students in the Business Analytics & Big Data program.
+I hope this email finds you well. I'm reaching out to explore potential collaboration opportunities between our organizations.
 
-We're looking for data science and AI enthusiasts to join our growing team for exciting projects combining business analytics with cutting-edge AI solutions.
+We've been following {{company}}'s achievements and believe there could be synergies worth exploring.
 
-Would you be available for a brief call to discuss this opportunity? I'd love to learn more about your experience and interests.
+Would you be available for a brief call to discuss this further? I'd love to learn more about your current initiatives.
 
 Best regards,
-The Indosy Team
-hello@indosy.com`,
+{{sender_name}}
+{{sender_email}}`,
   isDefault: false
 };
 
-// ESADE Business School outreach template
-export const ESADE_TEMPLATE: EmailTemplate = {
-  id: 'esade-outreach',
-  name: 'ESADE Business School Outreach',
-  subject: 'AI & Data Science Opportunity for ESADE Students',
+// Example newsletter template
+export const NEWSLETTER_TEMPLATE: EmailTemplate = {
+  id: 'newsletter',
+  name: 'Monthly Newsletter',
+  subject: '{{month}} Newsletter - {{company}}',
   body: `Dear {{name}},
 
-I hope your studies at ESADE Business School are going well. I'm reaching out to connect with talented MSc students interested in AI and data science.
+Welcome to our {{month}} newsletter! 
 
-Our company is expanding its data science team and looking for talented individuals with your academic background. We'd love to discuss potential opportunities with you.
+{{main_content}}
 
-Would you be interested in learning more? I'm available for a quick call at your convenience.
+We hope you found this update valuable. If you have any questions, please don't hesitate to contact us.
 
 Best regards,
-The Indosy Team
-hello@indosy.com`,
+The {{company}} Team
+{{contact_email}}`,
   isDefault: false
 };
 
@@ -152,16 +140,16 @@ export async function ensureConfigDirectories(): Promise<void> {
       await fs.writeJson(defaultTemplatePath, DEFAULT_TEMPLATE, { spaces: 2 });
     }
     
-    // Create IE template if it doesn't exist
-    const ieTemplatePath = path.join(TEMPLATES_DIR, 'ie-outreach.json');
-    if (!await fs.pathExists(ieTemplatePath)) {
-      await fs.writeJson(ieTemplatePath, IE_TEMPLATE, { spaces: 2 });
+    // Create business template if it doesn't exist
+    const businessTemplatePath = path.join(TEMPLATES_DIR, 'business-outreach.json');
+    if (!await fs.pathExists(businessTemplatePath)) {
+      await fs.writeJson(businessTemplatePath, BUSINESS_TEMPLATE, { spaces: 2 });
     }
     
-    // Create ESADE template if it doesn't exist
-    const esadeTemplatePath = path.join(TEMPLATES_DIR, 'esade-outreach.json');
-    if (!await fs.pathExists(esadeTemplatePath)) {
-      await fs.writeJson(esadeTemplatePath, ESADE_TEMPLATE, { spaces: 2 });
+    // Create newsletter template if it doesn't exist
+    const newsletterTemplatePath = path.join(TEMPLATES_DIR, 'newsletter.json');
+    if (!await fs.pathExists(newsletterTemplatePath)) {
+      await fs.writeJson(newsletterTemplatePath, NEWSLETTER_TEMPLATE, { spaces: 2 });
     }
     
     // Create log file if it doesn't exist
@@ -229,7 +217,7 @@ export async function getEmailTemplates(): Promise<EmailTemplate[]> {
     return templates;
   } catch (error) {
     logToFile('Error reading email templates:');
-    return [DEFAULT_TEMPLATE, IE_TEMPLATE, ESADE_TEMPLATE];
+    return [DEFAULT_TEMPLATE, BUSINESS_TEMPLATE, NEWSLETTER_TEMPLATE];
   }
 }
 
