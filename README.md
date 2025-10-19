@@ -1,5 +1,7 @@
 # SMTP Email MCP Server
 
+[![smithery badge](https://smithery.ai/badge/@samihalawa/mcp-server-smtp)](https://smithery.ai/server/@samihalawa/mcp-server-smtp)
+
 A Model Context Protocol (MCP) server that provides email sending capabilities for Claude and other MCP-compatible AI assistants.
 
 ## Features
@@ -13,6 +15,15 @@ A Model Context Protocol (MCP) server that provides email sending capabilities f
 
 ## Installation
 
+### Installing via Smithery
+
+To install SMTP Email Server for Claude Desktop automatically via [Smithery](https://smithery.ai/server/@samihalawa/mcp-server-smtp):
+
+```bash
+npx -y @smithery/cli install @samihalawa/mcp-server-smtp --client claude
+```
+
+### Manual Installation
 ```bash
 # Clone the repository
 git clone https://github.com/samihalawa/mcp-server-smtp.git
@@ -24,6 +35,7 @@ npm install
 # Build the server
 npm run build
 ```
+
 
 ## Usage
 
