@@ -14,6 +14,7 @@ export interface SmtpServerConfig {
     user: string;
     pass: string;
   };
+  from?: string;
   isDefault: boolean;
 }
 

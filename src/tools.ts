@@ -215,6 +215,10 @@ export function createToolDefinitions(): Record<string, Tool> {
             type: "string",
             description: "SMTP password"
           },
+          from: {
+            type: "string",
+            description: "Default 'from' string in this SMTP. 'name <email@example.com>' or just 'email@example.com'"
+          },
           isDefault: {
             type: "boolean",
             description: "Whether this configuration should be the default"
@@ -257,6 +261,10 @@ export function createToolDefinitions(): Record<string, Tool> {
           pass: {
             type: "string",
             description: "SMTP password"
+          },
+          from: {
+            type: "string",
+            description: "Default 'from' string in this SMTP. 'name <email@example.com>' or just 'email@example.com'"
           },
           isDefault: {
             type: "boolean",
