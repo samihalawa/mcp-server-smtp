@@ -83,6 +83,11 @@ export function createToolDefinitions(): Record<string, Tool> {
             type: "object",
             description: "Data to be used for template variable substitution"
           },
+          attachments: {
+            type: "array",
+            items: { type: "string" },
+            description: "Array of absolute file paths to attach to the email"
+          },
           smtpConfigId: {
             type: "string",
             description: "ID of the SMTP configuration to use. If not provided, the default configuration will be used."
@@ -166,6 +171,12 @@ export function createToolDefinitions(): Record<string, Tool> {
             type: "number",
             description: "Delay between batches in milliseconds (default: 1000)"
           },
+          attachments: {
+            type: "array",
+            items: { type: "string" },
+            description: "Array of absolute file paths to attach to the email"
+          },
+
           smtpConfigId: {
             type: "string",
             description: "ID of the SMTP configuration to use. If not provided, the default configuration will be used."
