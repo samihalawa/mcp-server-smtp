@@ -153,7 +153,8 @@ async function handleSendEmail(parameters: any) {
       cc: parameters.cc,
       bcc: parameters.bcc,
       templateId: parameters.templateId,
-      templateData: parameters.templateData
+      templateData: parameters.templateData,
+      attachments: parameters.attachments
     };
     
     // Send the email
@@ -188,6 +189,7 @@ async function handleSendBulkEmails(parameters: any) {
       bcc: parameters.bcc,
       templateId: parameters.templateId,
       templateData: parameters.templateData,
+      attachments: parameters.attachments,
       batchSize: parameters.batchSize,
       delayBetweenBatches: parameters.delayBetweenBatches
     };

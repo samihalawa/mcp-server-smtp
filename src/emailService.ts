@@ -21,6 +21,7 @@ export interface EmailData {
   bcc?: EmailRecipient[];
   templateId?: string;
   templateData?: Record<string, any>;
+  attachments?: string[];
 }
 
 // Interface for bulk email data
@@ -36,6 +37,7 @@ export interface BulkEmailData {
   bcc?: EmailRecipient[];
   templateId?: string;
   templateData?: Record<string, any>;
+  attachments?: string[];
   batchSize?: number;
   delayBetweenBatches?: number; // in milliseconds
 }
@@ -176,7 +178,8 @@ export async function sendEmail(data: EmailData, smtpConfigId?: string): Promise
       subject,
       html: body,
       cc: data.cc ? formatRecipients(data.cc) : undefined,
-      bcc: data.bcc ? formatRecipients(data.bcc) : undefined
+      bcc: data.bcc ? formatRecipients(data.bcc) : undefined,
+      attachments: data.attachments?.map((filePath) => ({ path: filePath })),
     };
     
     // Send email
@@ -265,6 +268,7 @@ export async function sendBulkEmails(data: BulkEmailData, smtpConfigId?: string)
             from: data.from,
             cc: data.cc,
             bcc: data.bcc,
+            attachments: data.attachments,
             templateId: data.templateId,
             templateData: {
               ...data.templateData,
