@@ -1,7 +1,24 @@
-import fs from 'fs-extra';
-import * as path from 'path';
-import * as os from 'os';
+import * as fs from "node:fs/promises";
+import * as os from "node:os";
+import * as path from "node:path";
 import { logToFile } from "./index.js";
+
+async function pathExists(p: string): Promise<boolean> {
+  try {
+    await fs.access(p);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+async function readJson<T>(p: string): Promise<T> {
+  return JSON.parse(await fs.readFile(p, "utf-8"));
+}
+
+async function writeJson(p: string, data: unknown): Promise<void> {
+  await fs.writeFile(p, JSON.stringify(data, null, 2), "utf-8");
+}
 
 // Define types for configurations
 export interface SmtpServerConfig {
@@ -46,47 +63,47 @@ export interface EmailLogEntry {
 }
 
 // Define paths for configuration and data storage
-export const CONFIG_DIR = path.join(os.homedir(), '.smtp-mcp-server');
-export const TEMPLATES_DIR = path.join(CONFIG_DIR, 'templates');
-export const SMTP_CONFIG_FILE = path.join(CONFIG_DIR, 'smtp-config.json');
-export const LOG_FILE = path.join(CONFIG_DIR, 'email-logs.json');
+export const CONFIG_DIR = path.join(os.homedir(), ".smtp-mcp-server");
+export const TEMPLATES_DIR = path.join(CONFIG_DIR, "templates");
+export const SMTP_CONFIG_FILE = path.join(CONFIG_DIR, "smtp-config.json");
+export const LOG_FILE = path.join(CONFIG_DIR, "email-logs.json");
 
 // Default SMTP configuration
 export const DEFAULT_SMTP_CONFIG: SmtpConfig = {
   smtpServers: [
     {
-      id: 'example-smtp',
-      name: 'Example SMTP',
-      host: 'smtp.example.com',
+      id: "example-smtp",
+      name: "Example SMTP",
+      host: "smtp.example.com",
       port: 587,
       secure: false,
       auth: {
-        user: 'username',
-        pass: 'password'
+        user: "username",
+        pass: "password",
       },
-      isDefault: true
-    }
+      isDefault: true,
+    },
   ],
   rateLimit: {
     enabled: true,
-    messagesPerMinute: 30
-  }
+    messagesPerMinute: 30,
+  },
 };
 
 // Default email template
 export const DEFAULT_TEMPLATE: EmailTemplate = {
-  id: 'default',
-  name: 'Default Template',
-  subject: 'Default Subject',
-  body: 'Hello {{name}},\n\nThis is a default email template.\n\nBest regards,\nThe Team',
-  isDefault: true
+  id: "default",
+  name: "Default Template",
+  subject: "Default Subject",
+  body: "Hello {{name}},\n\nThis is a default email template.\n\nBest regards,\nThe Team",
+  isDefault: true,
 };
 
 // Example business template
 export const BUSINESS_TEMPLATE: EmailTemplate = {
-  id: 'business-outreach',
-  name: 'Business Outreach',
-  subject: 'Partnership Opportunity - {{company}}',
+  id: "business-outreach",
+  name: "Business Outreach",
+  subject: "Partnership Opportunity - {{company}}",
   body: `Dear {{name}},
 
 I hope this email finds you well. I'm reaching out to explore potential collaboration opportunities between our organizations.
@@ -98,14 +115,14 @@ Would you be available for a brief call to discuss this further? I'd love to lea
 Best regards,
 {{sender_name}}
 {{sender_email}}`,
-  isDefault: false
+  isDefault: false,
 };
 
 // Example newsletter template
 export const NEWSLETTER_TEMPLATE: EmailTemplate = {
-  id: 'newsletter',
-  name: 'Monthly Newsletter',
-  subject: '{{month}} Newsletter - {{company}}',
+  id: "newsletter",
+  name: "Monthly Newsletter",
+  subject: "{{month}} Newsletter - {{company}}",
   body: `Dear {{name}},
 
 Welcome to our {{month}} newsletter! 
@@ -117,7 +134,7 @@ We hope you found this update valuable. If you have any questions, please don't 
 Best regards,
 The {{company}} Team
 {{contact_email}}`,
-  isDefault: false
+  isDefault: false,
 };
 
 /**
@@ -125,36 +142,33 @@ The {{company}} Team
  */
 export async function ensureConfigDirectories(): Promise<void> {
   try {
-    // Create config directory if it doesn't exist
-    await fs.ensureDir(CONFIG_DIR);
-    await fs.ensureDir(TEMPLATES_DIR);
-    
-    // Create default SMTP config if it doesn't exist
-    if (!await fs.pathExists(SMTP_CONFIG_FILE)) {
-      await fs.writeJson(SMTP_CONFIG_FILE, DEFAULT_SMTP_CONFIG, { spaces: 2 });
+    await fs.mkdir(CONFIG_DIR, { recursive: true });
+    await fs.mkdir(TEMPLATES_DIR, { recursive: true });
+
+    if (!(await pathExists(SMTP_CONFIG_FILE))) {
+      await writeJson(SMTP_CONFIG_FILE, DEFAULT_SMTP_CONFIG);
     }
-    
-    // Create default template if it doesn't exist
-    const defaultTemplatePath = path.join(TEMPLATES_DIR, 'default.json');
-    if (!await fs.pathExists(defaultTemplatePath)) {
-      await fs.writeJson(defaultTemplatePath, DEFAULT_TEMPLATE, { spaces: 2 });
+
+    const defaultTemplatePath = path.join(TEMPLATES_DIR, "default.json");
+    if (!(await pathExists(defaultTemplatePath))) {
+      await writeJson(defaultTemplatePath, DEFAULT_TEMPLATE);
     }
-    
-    // Create business template if it doesn't exist
-    const businessTemplatePath = path.join(TEMPLATES_DIR, 'business-outreach.json');
-    if (!await fs.pathExists(businessTemplatePath)) {
-      await fs.writeJson(businessTemplatePath, BUSINESS_TEMPLATE, { spaces: 2 });
+
+    const businessTemplatePath = path.join(
+      TEMPLATES_DIR,
+      "business-outreach.json",
+    );
+    if (!(await pathExists(businessTemplatePath))) {
+      await writeJson(businessTemplatePath, BUSINESS_TEMPLATE);
     }
-    
-    // Create newsletter template if it doesn't exist
-    const newsletterTemplatePath = path.join(TEMPLATES_DIR, 'newsletter.json');
-    if (!await fs.pathExists(newsletterTemplatePath)) {
-      await fs.writeJson(newsletterTemplatePath, NEWSLETTER_TEMPLATE, { spaces: 2 });
+
+    const newsletterTemplatePath = path.join(TEMPLATES_DIR, "newsletter.json");
+    if (!(await pathExists(newsletterTemplatePath))) {
+      await writeJson(newsletterTemplatePath, NEWSLETTER_TEMPLATE);
     }
-    
-    // Create log file if it doesn't exist
-    if (!await fs.pathExists(LOG_FILE)) {
-      await fs.writeJson(LOG_FILE, [], { spaces: 2 });
+
+    if (!(await pathExists(LOG_FILE))) {
+      await writeJson(LOG_FILE, []);
     }
   } catch (error) {
     logToFile(`Error ensuring config directories: ${error}`);
@@ -167,10 +181,10 @@ export async function ensureConfigDirectories(): Promise<void> {
  */
 export async function getSmtpConfigs(): Promise<SmtpServerConfig[]> {
   try {
-    const config = await fs.readJson(SMTP_CONFIG_FILE) as SmtpConfig;
+    const config = await readJson<SmtpConfig>(SMTP_CONFIG_FILE);
     return config.smtpServers || [];
   } catch (error) {
-    logToFile('Error reading SMTP config:');
+    logToFile("Error reading SMTP config:");
     return DEFAULT_SMTP_CONFIG.smtpServers;
   }
 }
@@ -180,20 +194,26 @@ export async function getSmtpConfigs(): Promise<SmtpServerConfig[]> {
  */
 export async function getDefaultSmtpConfig(): Promise<SmtpServerConfig> {
   const configs = await getSmtpConfigs();
-  return configs.find(config => config.isDefault) || configs[0] || DEFAULT_SMTP_CONFIG.smtpServers[0];
+  return (
+    configs.find((config) => config.isDefault) ||
+    configs[0] ||
+    DEFAULT_SMTP_CONFIG.smtpServers[0]
+  );
 }
 
 /**
  * Save SMTP configurations
  */
-export async function saveSmtpConfigs(configs: SmtpServerConfig[]): Promise<boolean> {
+export async function saveSmtpConfigs(
+  configs: SmtpServerConfig[],
+): Promise<boolean> {
   try {
-    const currentConfig = await fs.readJson(SMTP_CONFIG_FILE) as SmtpConfig;
+    const currentConfig = await readJson<SmtpConfig>(SMTP_CONFIG_FILE);
     currentConfig.smtpServers = configs;
-    await fs.writeJson(SMTP_CONFIG_FILE, currentConfig, { spaces: 2 });
+    await writeJson(SMTP_CONFIG_FILE, currentConfig);
     return true;
   } catch (error) {
-    logToFile('Error saving SMTP config:');
+    logToFile("Error saving SMTP config:");
     return false;
   }
 }
@@ -205,18 +225,18 @@ export async function getEmailTemplates(): Promise<EmailTemplate[]> {
   try {
     const files = await fs.readdir(TEMPLATES_DIR);
     const templates: EmailTemplate[] = [];
-    
+
     for (const file of files) {
-      if (file.endsWith('.json')) {
+      if (file.endsWith(".json")) {
         const templatePath = path.join(TEMPLATES_DIR, file);
-        const template = await fs.readJson(templatePath) as EmailTemplate;
+        const template = await readJson<EmailTemplate>(templatePath);
         templates.push(template);
       }
     }
-    
+
     return templates;
   } catch (error) {
-    logToFile('Error reading email templates:');
+    logToFile("Error reading email templates:");
     return [DEFAULT_TEMPLATE, BUSINESS_TEMPLATE, NEWSLETTER_TEMPLATE];
   }
 }
@@ -226,19 +246,25 @@ export async function getEmailTemplates(): Promise<EmailTemplate[]> {
  */
 export async function getDefaultEmailTemplate(): Promise<EmailTemplate> {
   const templates = await getEmailTemplates();
-  return templates.find(template => template.isDefault) || templates[0] || DEFAULT_TEMPLATE;
+  return (
+    templates.find((template) => template.isDefault) ||
+    templates[0] ||
+    DEFAULT_TEMPLATE
+  );
 }
 
 /**
  * Save email template
  */
-export async function saveEmailTemplate(template: EmailTemplate): Promise<boolean> {
+export async function saveEmailTemplate(
+  template: EmailTemplate,
+): Promise<boolean> {
   try {
     const templatePath = path.join(TEMPLATES_DIR, `${template.id}.json`);
-    await fs.writeJson(templatePath, template, { spaces: 2 });
+    await writeJson(templatePath, template);
     return true;
   } catch (error) {
-    logToFile('Error saving email template:');
+    logToFile("Error saving email template:");
     return false;
   }
 }
@@ -246,13 +272,15 @@ export async function saveEmailTemplate(template: EmailTemplate): Promise<boolea
 /**
  * Delete email template
  */
-export async function deleteEmailTemplate(templateId: string): Promise<boolean> {
+export async function deleteEmailTemplate(
+  templateId: string,
+): Promise<boolean> {
   try {
     const templatePath = path.join(TEMPLATES_DIR, `${templateId}.json`);
-    await fs.remove(templatePath);
+    await fs.rm(templatePath, { force: true });
     return true;
   } catch (error) {
-    logToFile('Error deleting email template:');
+    logToFile("Error deleting email template:");
     return false;
   }
 }
@@ -263,20 +291,17 @@ export async function deleteEmailTemplate(templateId: string): Promise<boolean> 
 export async function logEmailActivity(entry: EmailLogEntry): Promise<boolean> {
   try {
     let logs: EmailLogEntry[] = [];
-    
+
     // Read existing logs if file exists
-    if (await fs.pathExists(LOG_FILE)) {
-      logs = await fs.readJson(LOG_FILE) as EmailLogEntry[];
+    if (await pathExists(LOG_FILE)) {
+      logs = await readJson<EmailLogEntry[]>(LOG_FILE);
     }
-    
-    // Add new log entry
+
     logs.push(entry);
-    
-    // Write updated logs
-    await fs.writeJson(LOG_FILE, logs, { spaces: 2 });
+    await writeJson(LOG_FILE, logs);
     return true;
   } catch (error) {
-    logToFile('Error logging email activity:');
+    logToFile("Error logging email activity:");
     return false;
   }
 }
@@ -286,12 +311,12 @@ export async function logEmailActivity(entry: EmailLogEntry): Promise<boolean> {
  */
 export async function getEmailLogs(): Promise<EmailLogEntry[]> {
   try {
-    if (await fs.pathExists(LOG_FILE)) {
-      return await fs.readJson(LOG_FILE) as EmailLogEntry[];
+    if (await pathExists(LOG_FILE)) {
+      return await readJson<EmailLogEntry[]>(LOG_FILE);
     }
     return [];
   } catch (error) {
-    logToFile('Error reading email logs:');
+    logToFile("Error reading email logs:");
     return [];
   }
-} 
+}
