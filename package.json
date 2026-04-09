@@ -18,15 +18,12 @@
     "smithery:api-publish": "node scripts/smithery-api-publish.js"
   },
   "dependencies": {
-    "@modelcontextprotocol/sdk": "^1.4.1",
-    "fs-extra": "^11.1.1",
-    "node-fetch": "^3.3.2",
-    "nodemailer": "^6.10.0"
+    "@modelcontextprotocol/sdk": "^1.29.0",
+    "nodemailer": "^8.0.5"
   },
   "devDependencies": {
-    "@types/fs-extra": "^11.0.4",
     "@types/node": "^20.8.2",
-    "@types/nodemailer": "^6.4.13",
+    "@types/nodemailer": "^8.0.0",
     "typescript": "^5.2.2"
   }
 }
