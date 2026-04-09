@@ -254,6 +254,7 @@ async function handleAddSmtpConfig(parameters: any) {
         user: parameters.user,
         pass: parameters.pass
       },
+      from: parameters.from,
       isDefault: parameters.isDefault ?? false
     };
     
@@ -311,6 +312,7 @@ async function handleUpdateSmtpConfig(parameters: any) {
     if (parameters.secure !== undefined) updatedConfig.secure = parameters.secure;
     if (parameters.user !== undefined) updatedConfig.auth.user = parameters.user;
     if (parameters.pass !== undefined) updatedConfig.auth.pass = parameters.pass;
+    if (parameters.from !== undefined) updatedConfig.from = parameters.from;
     
     // Handle default flag
     if (parameters.isDefault !== undefined) {
